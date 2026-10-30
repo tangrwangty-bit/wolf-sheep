@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2eb">
+  <meta name="description" content="欢迎来到睿甜棋室。3只狼与15只羊，支持人机和本地双人，所有计算在本地完成。">
+  <title>狼吃羊 · 睿甜棋室</title>
+  <link rel="icon" href="./assets/wolf.png" type="image/png">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./rules.js" defer></script>
+  <script src="./ai.js" defer></script>
+  <script src="./game.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="./index.html" aria-label="睿甜棋室首页">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 23 12 7l7 16M15 23l6-12 7 12M8 17h8"/></svg></span>
+        <span>睿甜棋室 <span class="brand-divider">/</span> <span class="brand-sub">小棋盘，大博弈</span></span>
+      </a>
+      <button id="rules-button" class="text-button" type="button"><span class="help-icon">?</span> 玩法说明</button>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="game-title">
+        <p class="eyebrow">RUITIAN CHESS ROOM · 5 × 5</p>
+        <div class="title-line"><h1 id="game-title">狼吃羊</h1><span class="edition">经典策略棋 · 5 × 5</span></div>
+        <p class="intro-copy">是步步为营，还是出其不意？一场捕猎与围困的较量。</p>
+      </section>
+
+      <div class="game-layout">
+        <aside class="setup-card" aria-label="对局设置">
+          <div class="section-heading"><span class="section-number">01</span><h2>准备一局</h2><span class="small-tag">本地游戏</span></div>
+          <fieldset class="setting"><legend>对局模式</legend><div class="segmented" id="mode-control">
+            <button type="button" data-mode="ai" aria-pressed="true">人机对战</button>
+            <button type="button" data-mode="local" aria-pressed="false">本地双人</button>
+          </div></fieldset>
+          <div id="ai-settings">
+            <fieldset class="setting"><legend>选择你的阵营</legend><div class="side-picker" id="side-control">
+              <button type="button" data-side="wolf" aria-pressed="true"><span class="side-image wolf-image"><img src="./assets/wolf.png" alt="" draggable="false"></span><strong>执狼</strong><small>主动出击</small></button>
+              <button type="button" data-side="sheep" aria-pressed="false"><span class="side-image sheep-image"><img src="./assets/sheep.png" alt="" draggable="false"></span><strong>执羊</strong><small>合力围困</small></button>
+            </div></fieldset>
+            <fieldset class="setting"><legend>电脑难度</legend><div class="segmented" id="difficulty-control">
+              <button type="button" data-difficulty="easy" aria-pressed="true">低智力 <span>· 入门</span></button>
+              <button type="button" data-difficulty="hard" aria-pressed="false">高智力 <span>· 挑战</span></button>
+            </div></fieldset>
+          </div>
+          <p class="config-note" id="config-note">你执狼先行，电脑执羊。更改设置会开始新的一局。</p>
+          <div class="goal-card"><span class="goal-symbol" aria-hidden="true">↗</span><div><h3 id="goal-title">以少胜多，寻找破绽</h3><p id="goal-copy">隔一空位吃掉终点的羊，累计吃掉 10 只即获胜。</p></div></div>
+          <div class="setup-footer"><span class="live-dot"></span> 无需联网，随时来一局</div>
+        </aside>
+
+        <section class="play-area" aria-label="游戏棋盘与状态">
+          <div class="board-topline"><div class="turn-label"><span id="turn-dot" class="turn-dot"></span><strong id="turn-title">轮到狼方</strong><span id="turn-owner" class="turn-owner">你先行</span></div><span class="board-meta"><span class="desktop-first">狼方始终先手</span><span id="mobile-stats" class="mobile-stats">羊 15 只 · 0/100 步</span></span></div>
+          <div class="board-frame">
+            <div class="board-coordinates columns" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span></div>
+            <div class="board-coordinates rows" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+            <div class="board" id="board" role="group" aria-label="5乘5棋盘，行从上到下，列从左到右"></div>
+            <div id="result-panel" class="result-panel" role="status" hidden><span id="result-symbol" aria-hidden="true">✦</span><div><h2 id="result-title"></h2><p id="result-copy"></p></div></div>
+            <span class="board-corner-label" aria-hidden="true">睿 甜</span>
+          </div>
+          <div class="board-legend" aria-label="落点图例"><span><i class="legend-dot"></i>可移动</span><span><i class="legend-capture"></i>可吃羊</span><span><i class="legend-last"></i>上一步</span></div>
+          <p id="game-message" class="game-message" role="status" aria-live="polite">点击一只狼，再点击提示位置走棋。</p>
+          <div class="game-actions"><button type="button" id="undo-button" class="secondary-button" disabled><span aria-hidden="true">↶</span> 悔棋</button><button type="button" id="restart-button" class="primary-button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a6 6 0 1 1-1 5M4 3v4h4"/></svg>重新开始</button></div>
+        </section>
+
+        <aside class="match-card" aria-label="本局记录">
+          <div class="section-heading"><span class="section-number">02</span><h2>棋局一览</h2></div>
+          <div class="stat-row"><span>剩余羊数</span><div><strong id="sheep-count">15</strong><small> / 15 只</small></div></div>
+          <div class="capture-stat"><div><span>狼已吃羊</span><strong><span id="captured-count">0</span><small> / 10</small></strong></div><div class="progress-track" id="capture-progress" role="progressbar" aria-label="狼获胜进度" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><span id="capture-fill"></span></div><p>吃到 10 只，狼方获胜</p></div>
+          <div class="stat-row steps-stat"><span>已进行步数</span><div><strong id="step-count">0</strong><small> / 100 步</small></div></div>
+          <p class="draw-note">双方合计 100 步未分胜负则和棋</p>
+          <div class="last-move"><span class="tiny-heading">上一步</span><p id="last-move-text">棋局刚刚开始</p></div>
+          <div class="quick-rule"><span class="tiny-heading">记住这一招</span><div class="capture-example" aria-label="狼、空位、羊，狼可以隔空吃羊"><img src="./assets/wolf.png" alt="狼"><span class="example-empty">·</span><img src="./assets/sheep.png" alt="羊"></div><p>中间留一空，狼就能吃羊。<br>羊要靠近围堵，也要留意身后。</p></div>
+        </aside>
+      </div>
+    </main>
+    <footer class="site-footer"><span>三只狼，十五只羊，步步有文章。</span><span>本地运行 <i></i> 无账号 <i></i> 无数据收集</span></footer>
+  </div>
+
+  <dialog id="rules-dialog" aria-labelledby="rules-title">
+    <div class="dialog-heading"><div><p class="eyebrow">HOW TO PLAY</p><h2 id="rules-title">一看就会，落子有道。</h2></div><button id="close-rules" class="close-button" type="button" aria-label="关闭玩法说明">×</button></div>
+    <div class="rule-list"><section><span>01</span><div><h3>狼先手，轮流走一步</h3><p>双方都只能上下左右走一格，落到空位。不能斜走、跳过棋子或走出棋盘。</p></div></section>
+      <section><span>02</span><div><h3>狼的特别招式：隔空吃羊</h3><p>狼 · 空位 · 羊，三点在同一横行或竖列时，狼可移动两格，吃掉终点的羊。中间必须为空；每回合只吃一只，不能连吃。</p></div></section>
+      <section><span>03</span><div><h3>两种取胜方式</h3><p>狼累计吃掉 10 只羊（剩余不超过 5 只）即获胜。羊需围住全部 3 只狼，使它们连普通移动和隔空吃羊都做不到。仅围住一两只还不够。</p></div></section>
+      <section><span>04</span><div><h3>100 步，来日再战</h3><p>每次合法行动计 1 步，双方合计 100 步未分胜负则和棋。第 100 步若产生胜负，优先判胜负。轮到羊时，若所有羊无棋可走，判狼胜。</p></div></section>
+      <section><span>05</span><div><h3>悔一步，再想一想</h3><p>双人模式撤销一步；人机模式撤销你最近的一步及电脑回应，思考中也可悔棋。玩家执羊时，电脑的首步不能单独撤销。结束后仍可悔棋，重新开始保留设置。</p></div></section></div>
+    <button id="got-it" class="primary-button dialog-confirm" type="button">明白了，开始下棋</button>
+  </dialog>
+  <noscript><p class="noscript">请启用 JavaScript 后开始游戏。所有运算均在你的设备本地完成。</p></noscript>
+</body>
+</html>
